@@ -18,10 +18,12 @@ public class TranslationHub : Hub<ITranslationHubClient>
     }
 
     [HubMethodName("executeAction")]
-    public Task ExecuteActionAsync(string action)
+    public Task ExecuteActionAsync(ExecuteActionRequest request)
     {
-        _logger.LogInformation("Action execution: {0}", action);
+        _logger.LogInformation("Action execution: {0}", request.Action);
 
         return Task.CompletedTask;
     }
 }
+
+public record ExecuteActionRequest(string Action);

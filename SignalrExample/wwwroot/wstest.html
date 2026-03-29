@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignalR Test Client</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #8b5cf6;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --border-radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1f2e 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--bg-tertiary);
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--text-secondary);
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .status-indicator.connected {
+            background: var(--success);
+            box-shadow: 0 0 15px var(--success);
+        }
+
+        .status-indicator.connecting {
+            background: var(--warning);
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-indicator.error {
+            background: var(--error);
+            box-shadow: 0 0 15px var(--error);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-text {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--bg-tertiary);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 14px;
+            background: var(--bg-primary);
+            border: 2px solid var(--bg-tertiary);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.5;
+        }
+
+        .input-hint {
+            margin-top: 6px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            flex: 1;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .output-section {
+            position: relative;
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .output-container {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 16px;
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .log-entry {
+            margin-bottom: 12px;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid var(--accent-primary);
+            background: rgba(59, 130, 246, 0.1);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .log-entry.success {
+            border-left-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .log-entry.error {
+            border-left-color: var(--error);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .log-entry.info {
+            border-left-color: var(--warning);
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .log-time {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .log-content {
+            color: var(--text-primary);
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 40px;
+            font-style: italic;
+        }
+
+        .json-pretty {
+            color: #7ee787;
+        }
+
+        .json-key {
+            color: #7ee787;
+        }
+
+        .json-string {
+            color: #a5d6ff;
+        }
+
+        .json-number {
+            color: #79c0ff;
+        }
+
+        .json-boolean {
+            color: #ff7b72;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            .button-group { flex-direction: column; }
+            .card { padding: 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SignalR Test Client</h1>
+            <div class="subtitle">Endpoint: /ws/transition</div>
+        </header>
+
+        <div class="status-bar">
+            <div class="status-indicator" id="statusIndicator"></div>
+            <span class="status-text" id="statusText">Connecting...</span>
+        </div>
+
+        <div class="card">
+            <div class="form-group">
+                <label for="methodName">Method Name</label>
+                <input type="text" id="methodName" placeholder="Enter hub method name (e.g. SendMessage)" />
+                <div class="input-hint">Название метода в Hub</div>
+            </div>
+
+            <div class="form-group">
+                <label for="jsonData">JSON Arguments</label>
+                <textarea id="jsonData" placeholder='{
+  "param1": "value1",
+  "param2": 123
+}'></textarea>
+                <div class="input-hint">Введите JSON массив аргументов или объект (будет обернут в массив)</div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" id="sendBtn" onclick="sendMessage()">
+                    <span>➤</span> Send
+                </button>
+                <button class="btn-secondary" onclick="formatJSON()">
+                    <span>✓</span> Format JSON
+                </button>
+            </div>
+        </div>
+
+        <div class="card output-section">
+            <div class="output-header">
+                <label>Response Log</label>
+                <button class="btn-secondary" onclick="clearOutput()">
+                    <span>✕</span> Clear
+                </button>
+            </div>
+            <div class="output-container" id="output">
+                <div class="empty-state">Ожидание сообщений...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let connection = null;
+        const statusIndicator = document.getElementById('statusIndicator');
+        const statusText = document.getElementById('statusText');
+        const sendBtn = document.getElementById('sendBtn');
+        const output = document.getElementById('output');
+
+        // Инициализация подключения
+        async function initConnection() {
+            updateStatus('connecting');
+            
+            connection = new signalR.HubConnectionBuilder()
+                .withUrl('/ws/transition')
+                .withAutomaticReconnect({
+                    nextRetryDelayInMilliseconds: (retryContext) => {
+                        if (retryContext.previousRetryCount === 0) return 1000;
+                        if (retryContext.previousRetryCount < 3) return 2000;
+                        return 5000;
+                    }
+                })
+                .configureLogging(signalR.LogLevel.Information)
+                .build();
+
+            // Обработка сообщений от сервера (если сервер вызывает клиентские методы)
+            connection.on("ReceiveMessage", (message) => {
+                log(message, 'info', 'Server Broadcast');
+            });
+
+            connection.onclose((error) => {
+                updateStatus('disconnected');
+                if (error) {
+                    log(`Connection closed with error: ${error.message}`, 'error', 'Connection');
+                } else {
+                    log('Connection closed', 'info', 'Connection');
+                }
+            });
+
+            connection.onreconnecting((error) => {
+                updateStatus('connecting');
+                log('Attempting to reconnect...', 'info', 'Connection');
+            });
+
+            connection.onreconnected((connectionId) => {
+                updateStatus('connected');
+                log(`Reconnected with ID: ${connectionId}`, 'success', 'Connection');
+            });
+
+            try {
+                await connection.start();
+                updateStatus('connected');
+                log(`Connected successfully. Connection ID: ${connection.connectionId}`, 'success', 'Connection');
+            } catch (err) {
+                updateStatus('error');
+                log(`Failed to connect: ${err.message}`, 'error', 'Connection');
+                console.error(err);
+            }
+        }
+
+        function updateStatus(status) {
+            statusIndicator.className = 'status-indicator';
+            
+            switch(status) {
+                case 'connected':
+                    statusIndicator.classList.add('connected');
+                    statusText.textContent = 'Connected';
+                    sendBtn.disabled = false;
+                    break;
+                case 'connecting':
+                    statusIndicator.classList.add('connecting');
+                    statusText.textContent = 'Connecting...';
+                    sendBtn.disabled = true;
+                    break;
+                case 'error':
+                    statusIndicator.classList.add('error');
+                    statusText.textContent = 'Connection Error';
+                    sendBtn.disabled = true;
+                    break;
+                default:
+                    statusText.textContent = 'Disconnected';
+                    sendBtn.disabled = true;
+            }
+        }
+
+        async function sendMessage() {
+            const methodName = document.getElementById('methodName').value.trim();
+            const jsonInput = document.getElementById('jsonData').value.trim();
+
+            if (!methodName) {
+                alert('Please enter method name');
+                return;
+            }
+
+            let args = [];
+            if (jsonInput) {
+                try {
+                    const parsed = JSON.parse(jsonInput);
+                    args = Array.isArray(parsed) ? parsed : [parsed];
+                } catch (e) {
+                    log(`Invalid JSON: ${e.message}`, 'error', 'Validation');
+                    return;
+                }
+            }
+
+            try {
+                log(`Invoking "${methodName}" with args: ${JSON.stringify(args, null, 2)}`, 'info', 'Client');
+                
+                const result = await connection.invoke(methodName, ...args);
+                
+                if (result !== undefined) {
+                    log(JSON.stringify(result, null, 2), 'success', `Response from ${methodName}`);
+                } else {
+                    log('Method executed successfully (no return value)', 'success', `Response from ${methodName}`);
+                }
+            } catch (err) {
+                log(`Error invoking ${methodName}: ${err.message}`, 'error', 'Error');
+                console.error(err);
+            }
+        }
+
+        function formatJSON() {
+            const textarea = document.getElementById('jsonData');
+            const value = textarea.value.trim();
+            
+            if (!value) return;
+            
+            try {
+                const parsed = JSON.parse(value);
+                textarea.value = JSON.stringify(parsed, null, 2);
+                log('JSON formatted successfully', 'success', 'Format');
+            } catch (e) {
+                log(`Cannot format invalid JSON: ${e.message}`, 'error', 'Format');
+            }
+        }
+
+        function clearOutput() {
+            output.innerHTML = '<div class="empty-state">Ожидание сообщений...</div>';
+        }
+
+        function log(message, type = 'info', label = 'Log') {
+            const emptyState = output.querySelector('.empty-state');
+            if (emptyState) emptyState.remove();
+
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            
+            const time = new Date().toLocaleTimeString();
+            
+            // Подсветка JSON если сообщение содержит JSON
+            let formattedMessage = escapeHtml(message);
+            if (isValidJSON(message)) {
+                formattedMessage = syntaxHighlightJSON(JSON.stringify(JSON.parse(message), null, 2));
+            }
+            
+            entry.innerHTML = `
+                <div class="log-time">${time} | ${label}</div>
+                <div class="log-content">${formattedMessage}</div>
+            `;
+            
+            output.insertBefore(entry, output.firstChild);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function isValidJSON(str) {
+            try {
+                JSON.parse(str);
+                return true;
+            } catch {
+                return false;
+            }
+        }
+
+        function syntaxHighlightJSON(json) {
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                let cls = 'json-number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'json-key';
+                    } else {
+                        cls = 'json-string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'json-boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'json-null';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+
+        // Обработка Enter в поле метода
+        document.getElementById('methodName').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Автоподключение при загрузке
+        initConnection();
+    </script>
+</body>
+</html>

@@ -11,6 +11,12 @@ builder.Services.AddSingleton<MyObjectRepository>();
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment() == true)
+{
+    app.UseDefaultFiles();
+    app.UseStaticFiles();
+}
+
 app.MapPost("/api/add", (MyObjectRepository rep, [FromBody]ObjectCreateRequest request) =>
 {
     rep.AddObject(new MyObject(request.Name));
