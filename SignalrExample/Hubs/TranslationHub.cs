@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using SignalrExample.Objects;
-using SignalrExample.Repositories;
 
 namespace SignalrExample.Hubs;
-
 
 public interface ITranslationHubClient
 {
@@ -12,16 +10,18 @@ public interface ITranslationHubClient
 
 public class TranslationHub : Hub<ITranslationHubClient>
 {
-    private readonly MyObjectRepository _repository;
+    private readonly ILogger<TranslationHub> _logger;
 
-    public TranslationHub(MyObjectRepository repository)
+    public TranslationHub(ILogger<TranslationHub> logger)
     {
-        _repository = repository;
-        _repository.EventChanged += (o, e) => OnNameChangedAsync(o, e);
+        _logger = logger;
     }
 
-    private Task OnNameChangedAsync(MyObject obj, string name)
+    [HubMethodName("executeAction")]
+    public Task ExecuteActionAsync(string action)
     {
-        return Clients.All.OnObjectChangedAsync(obj, name);
+        _logger.LogInformation("Action execution: {0}", action);
+
+        return Task.CompletedTask;
     }
 }
