@@ -1,3 +1,6 @@
 <Solution>
+  <Project Path="SignalRExample.Application/SignalRExample.Application.csproj" Id="16a8256e-061b-4a10-8b5d-8cb9d094a476" />
+  <Project Path="SignalRExample.Domain/SignalRExample.Domain.csproj" Id="024a4dba-db4a-45e2-b968-17b90ecc8113" />
+  <Project Path="SignalRExample.Infrastructure/SignalRExample.Infrastructure.csproj" Id="5693867a-6e57-4b9e-a046-785db3d9d337" />
   <Project Path="SignalrExample/SignalrExample.csproj" />
 </Solution>

@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using SignalrExample.Objects;
 
 namespace SignalrExample.Hubs;
 
 public interface ITranslationHubClient
 {
-    Task OnObjectChangedAsync(MyObject obj, string name);
+    Task SendEventAsync(HubClientEvent @event);
 }
 
 public class TranslationHub : Hub<ITranslationHubClient>
@@ -17,13 +16,10 @@ public class TranslationHub : Hub<ITranslationHubClient>
         _logger = logger;
     }
 
-    [HubMethodName("executeAction")]
-    public Task ExecuteActionAsync(ExecuteActionRequest request)
+    [HubMethodName("executeCommand")]
+    public Task ExecuteCommandAsync(HubCommand command)
     {
-        _logger.LogInformation("Action execution: {0}", request.Action);
-
+        _logger.LogInformation($"executing {command.Type} with body: {command.Body}");
         return Task.CompletedTask;
     }
 }
-
-public record ExecuteActionRequest(string Action);
