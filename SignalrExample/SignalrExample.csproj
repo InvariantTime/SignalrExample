@@ -6,4 +6,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SignalRExample.Application\SignalRExample.Application.csproj" />
+    <ProjectReference Include="..\SignalRExample.Domain\SignalRExample.Domain.csproj" />
+    <ProjectReference Include="..\SignalRExample.Infrastructure\SignalRExample.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

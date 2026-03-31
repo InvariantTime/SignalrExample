@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SignalRExample.Domain\SignalRExample.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
