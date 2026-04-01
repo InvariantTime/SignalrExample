@@ -2,5 +2,5 @@
 
 public interface ICommandBus
 {
-    Task ExecuteAsync<T>(T command) where T : class;
+    Task ExecuteAsync(object command);
 }

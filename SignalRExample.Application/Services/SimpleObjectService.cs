@@ -42,4 +42,13 @@ public class SimpleObjectService : ISimpleObjectService
         return _repository.GetAll()
             .Select(x => new SimpleObjectSummary(x.Id, x.Name, x.Value));
     }
+
+    public SimpleObjectId Create(string name)
+    {
+        var id = SimpleObjectId.New();
+        var obj = new SimpleObject(id, name);
+        _repository.AddObject(obj);
+
+        return id;
+    }
 }

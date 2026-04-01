@@ -385,7 +385,7 @@
             updateStatus('connecting');
             
             connection = new signalR.HubConnectionBuilder()
-                .withUrl('/ws/transition')
+                .withUrl('/ws/translation')
                 .withAutomaticReconnect({
                     nextRetryDelayInMilliseconds: (retryContext) => {
                         if (retryContext.previousRetryCount === 0) return 1000;

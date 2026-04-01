@@ -1,9 +1,11 @@
-using SignalrExample.Hubs;
+using SignalRExample.Hubs;
 using SignalRExample.Application.CommandContracts;
 using SignalRExample.Application.Executors;
 using SignalRExample.Application.Repositories;
 using SignalRExample.Application.Services;
+using SignalRExample.Infrastructure.Commands;
 using SignalRExample.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +29,8 @@ builder.Services.AddSingleton<ICommandExecutor, DecrementCommandExecutor>();
 builder.Services.AddSingleton<ISimpleObjectService, SimpleObjectService>();
 builder.Services.AddSingleton<ISimpleObjectRepository, InMemorySimpleObjectRepository>();
 
+builder.Services.AddSingleton<ICommandMapper, CommandMapper>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment() == true)
@@ -35,6 +39,14 @@ if (app.Environment.IsDevelopment() == true)
     app.UseStaticFiles();
 }
 
-app.MapHub<TranslationHub>("ws/transition");
+app.MapPost("api/add", ([FromBody]AddSimpleObjectQuery query, ISimpleObjectService service) =>
+{
+    var id = service.Create(query.Name);
+    return id;
+});
+
+app.MapHub<TranslationHub>("ws/translation");
 
 app.Run();
+
+record AddSimpleObjectQuery(string Name);

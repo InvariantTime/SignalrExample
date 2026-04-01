@@ -10,4 +10,6 @@ public interface ISimpleObjectService
     bool Increment(SimpleObjectId id);
 
     bool Decrement(SimpleObjectId id);
+
+    SimpleObjectId Create(string name);
 }

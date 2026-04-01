@@ -12,9 +12,9 @@ public sealed class CommandBus : ICommandBus
         _executors = executors.ToFrozenDictionary(x => x.CommandType);
     }
 
-    public Task ExecuteAsync<T>(T command) where T : class
+    public Task ExecuteAsync(object command)
     {
-        _executors.TryGetValue(typeof(T), out var executor);
+        _executors.TryGetValue(command.GetType(), out var executor);
 
         if (executor == null)
             return Task.CompletedTask;

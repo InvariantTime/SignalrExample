@@ -1,25 +1,33 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using SignalRExample.Application.CommandContracts;
+using SignalRExample.Infrastructure.Commands;
+using System.Text.Json;
 
-namespace SignalrExample.Hubs;
+namespace SignalRExample.Hubs;
 
 public interface ITranslationHubClient
 {
-    Task SendEventAsync(HubClientEvent @event);
 }
 
 public class TranslationHub : Hub<ITranslationHubClient>
 {
-    private readonly ILogger<TranslationHub> _logger;
+    private readonly ICommandBus _commands;
+    private readonly ICommandMapper _mapper;
 
-    public TranslationHub(ILogger<TranslationHub> logger)
+    public TranslationHub(ICommandBus commands, ICommandMapper mapper, ILogger<TranslationHub> logger)
     {
-        _logger = logger;
+        _commands = commands;
+        _mapper = mapper;
     }
 
     [HubMethodName("executeCommand")]
-    public Task ExecuteCommandAsync(HubCommand command)
+    public Task ExecuteCommandAsync(ClientCommand raw)
     {
-        _logger.LogInformation($"executing {command.Type} with body: {command.Body}");
-        return Task.CompletedTask;
+        var command = _mapper.Map(raw);
+
+        if (command == null)
+            return Task.CompletedTask;//TODOD: notify about invalid command?
+
+        return _commands.ExecuteAsync(command);
     }
 }
