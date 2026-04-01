@@ -39,9 +39,9 @@ if (app.Environment.IsDevelopment() == true)
     app.UseStaticFiles();
 }
 
-app.MapPost("api/add", ([FromBody]AddSimpleObjectQuery query, ISimpleObjectService service) =>
+app.MapPost("api/add", async ([FromBody]AddSimpleObjectQuery query, ISimpleObjectService service) =>
 {
-    var id = service.Create(query.Name);
+    var id = await service.CreateAsync(query.Name);
     return id;
 });
 

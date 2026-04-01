@@ -7,9 +7,9 @@ public interface ISimpleObjectService
 {
     IEnumerable<SimpleObjectSummary> GetAll();
 
-    bool Increment(SimpleObjectId id);
+    Task<bool> IncrementAsync(SimpleObjectId id);
 
-    bool Decrement(SimpleObjectId id);
+    Task<bool> DecrementAsync(SimpleObjectId id);
 
-    SimpleObjectId Create(string name);
+    Task<SimpleObjectId> CreateAsync(string name);
 }

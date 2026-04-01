@@ -16,7 +16,6 @@ public class DecrementCommandExecutor : CommandExecutor<DecrementCommand>
 
     protected override Task ExecuteAsync(DecrementCommand command)
     {
-        _service.Decrement(command.Id);
-        return Task.CompletedTask;
+        return _service.DecrementAsync(command.Id);
     }
 }

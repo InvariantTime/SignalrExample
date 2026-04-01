@@ -16,7 +16,6 @@ public class IncrementCommandExecutor : CommandExecutor<IncrementCommand>
 
     protected override Task ExecuteAsync(IncrementCommand command)
     {
-        _service.Increment(command.Id);
-        return Task.CompletedTask;
+        return _service.IncrementAsync(command.Id);
     }
 }
