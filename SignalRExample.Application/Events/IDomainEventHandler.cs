@@ -2,7 +2,14 @@
 
 namespace SignalRExample.Application.Events;
 
-public interface IDomainEventHandler<T> where T : class, IDomainEvent
+public interface IDomainEventHandler
 {
-    void Handle(T @event);
+    public Type EventType { get; }
+}
+
+public interface IDomainEventHandler<in T> : IDomainEventHandler where T : class, IDomainEvent
+{
+    Type IDomainEventHandler.EventType => typeof(T);
+
+    Task HandleAsync(T @event);
 }
