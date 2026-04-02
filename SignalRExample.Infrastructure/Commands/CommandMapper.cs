@@ -2,7 +2,6 @@
 using SignalRExample.Application.Commands;
 using SignalRExample.Infrastructure.Converters;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace SignalRExample.Infrastructure.Commands;
 

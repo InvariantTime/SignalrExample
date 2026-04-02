@@ -8,6 +8,7 @@ using SignalRExample.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using SignalRExample.Application.Events;
 using SignalRExample.Infrastructure.Events;
+using SignalrExample.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,9 @@ builder.Services.AddSingleton<ICommandMapper, CommandMapper>();
 
 builder.Services.AddSingleton<EventHandlerActivator>();
 builder.Services.AddSingleton<IEventBus, EventBus>();
+
+builder.Services.AddSingleton<IDomainEventHandler, ObjectCreatedEventHandler>();
+builder.Services.AddSingleton<IDomainEventHandler, IncrementedEventHandler>();
 
 var app = builder.Build();
 

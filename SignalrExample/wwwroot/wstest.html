@@ -397,7 +397,7 @@
                 .build();
 
             // Обработка сообщений от сервера (если сервер вызывает клиентские методы)
-            connection.on("ReceiveMessage", (message) => {
+            connection.on("onEvent", (message) => {
                 log(message, 'info', 'Server Broadcast');
             });
 

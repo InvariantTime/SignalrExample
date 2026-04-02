@@ -1,15 +1,11 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using SignalRExample.Application.CommandContracts;
+using SignalRExample.Domain;
 using SignalRExample.Infrastructure.Commands;
-using System.Text.Json;
 
 namespace SignalRExample.Hubs;
 
-public interface ITranslationHubClient
-{
-}
-
-public class TranslationHub : Hub<ITranslationHubClient>
+public class TranslationHub : Hub
 {
     private readonly ICommandBus _commands;
     private readonly ICommandMapper _mapper;
